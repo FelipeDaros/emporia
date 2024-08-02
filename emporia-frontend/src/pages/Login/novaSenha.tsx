@@ -1,6 +1,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useEffect, useState } from "react";
+import { api } from "../../config/api";
+import { useParams } from "react-router-dom";
+import { ButtonDefault } from "../../components/Button";
 
 const schema = z.object({
   senha: z.string({
@@ -17,13 +21,28 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 export function NovaSenha() {
+  const { codigo } = useParams();
   const { register, handleSubmit, formState: { errors } } = useForm<Schema>({
     resolver: zodResolver(schema),
   });
+  const [disabled, setDisabled] = useState(true);
 
   const onSubmit = (data: Schema) => {
     console.log(data);
   };
+
+  async function fetchCodigo(){
+    try {
+      await api.get(`/usuarios/verificar-codigo-recuperacao-senha/${codigo}`);
+      setDisabled(false);
+    } catch (error) {
+      setDisabled(true);
+    }
+  }
+
+  useEffect(() => {
+    fetchCodigo()
+  });
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -50,9 +69,9 @@ export function NovaSenha() {
             <p className="text-red-500 mt-1">{errors.confirmarSenha.message}</p>
           )}
         </div>
-        <button type="submit" className="p-2 w-4/5 sm:w-1/3 bg-blue-500 text-white cursor-pointer">
+        <ButtonDefault disabled={disabled} type="submit" className="p-2 w-4/5 sm:w-1/3 bg-blue-500 text-white cursor-pointer">
           Alterar
-        </button>
+        </ButtonDefault>
       </form>
     </div>
   );

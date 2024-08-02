@@ -8,7 +8,8 @@ import { useAuth } from "../../context/AuthContext";
 export const DefaultMenu: React.FC = ({ children }) => {
   const { signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
+  const [isSettingsSubMenuOpen, setIsSettingsSubMenuOpen] = useState(false);
+  const [isProjectsSubMenuOpen, setIsProjectsSubMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const toggleMenu = () => {
@@ -43,11 +44,11 @@ export const DefaultMenu: React.FC = ({ children }) => {
             </li>
             <li
               className="mt-2 hover:bg-gray-700 relative"
-              onClick={() => setIsSubMenuOpen(true)}
-              onMouseLeave={() => setIsSubMenuOpen(false)}
+              onClick={() => setIsSettingsSubMenuOpen(prev => !prev)}
+              onMouseLeave={() => setIsSettingsSubMenuOpen(false)}
             >
               <a className="p-2 block hover:cursor-pointer">Configurações</a>
-              {isSubMenuOpen && (
+              {isSettingsSubMenuOpen && (
                 <ul className="absolute z-50 w-4/5 left-full top-0 bg-gray-700 text-white mt-2">
                   <li>
                     <Link className="p-2 block hover:bg-gray-600 hover:cursor-pointer" to="/items-de-servico">Items de serviço</Link>
@@ -60,6 +61,20 @@ export const DefaultMenu: React.FC = ({ children }) => {
                   </li>
                   <li>
                     <Link className="p-2 block hover:bg-gray-600 hover:cursor-pointer" to="/condicao-de-pagamento">Condição de pagamento</Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+            <li
+              className="mt-2 hover:bg-gray-700 relative"
+              onClick={() => setIsProjectsSubMenuOpen(prev => !prev)}
+              onMouseLeave={() => setIsProjectsSubMenuOpen(false)}
+            >
+              <a className="p-2 block hover:cursor-pointer">Gestão de Projetos</a>
+              {isProjectsSubMenuOpen && (
+                <ul className="absolute z-50 w-4/5 left-full top-0 bg-gray-700 text-white mt-2">
+                  <li>
+                    <Link className="p-2 block hover:bg-gray-600 hover:cursor-pointer" to="/squad">Squad</Link>
                   </li>
                 </ul>
               )}

@@ -9,17 +9,19 @@ datasource db {
 }
 
 model Usuarios {
-  id            String    @id @default(uuid())
-  senha         String
-  nome          String
-  email         String
-  data_admissao DateTime?
-  status        String?
-  tipo_usuario  String
-  setor         String
-  funcao        String
-  horas_uteis   Int?
-  created_at    DateTime  @default(now())
+  id                      String                    @id @default(uuid())
+  senha                   String
+  nome                    String
+  email                   String
+  data_admissao           DateTime?
+  status                  String?
+  tipo_usuario            String
+  setor                   String
+  funcao                  String
+  horas_uteis             Int?
+  created_at              DateTime                  @default(now())
+  CodigosRecuperacaoSenha CodigosRecuperacaoSenha[]
+  SquadIntegrantes        SquadIntegrantes[]
 
   @@map("usuarios")
 }
@@ -137,9 +139,35 @@ model CondicaoDePagamento {
 model CodigosRecuperacaoSenha {
   id         Int      @id @default(autoincrement())
   codigo     Int
+  id_usuario String
+  usuario    Usuarios @relation(fields: [id_usuario], references: [id])
+
   created_at DateTime @default(now())
 
   @@map("codigos_recuperacao_senha")
+}
+
+model Squad {
+  id               Int                @id @default(autoincrement())
+  nome             String
+  logo             String
+  status Status? @default(ATIVO)
+
+  squadIntegrantes SquadIntegrantes[]
+
+  @@map("squad")
+}
+
+model SquadIntegrantes {
+  id         Int    @id @default(autoincrement())
+  id_squad   Int
+  id_usuario String
+
+  squad    Squad    @relation(fields: [id_squad], references: [id])
+  usuarios Usuarios @relation(fields: [id_usuario], references: [id])
+
+  @@index([id_squad, id_usuario])
+  @@map("squad_integrantes")
 }
 
 enum Status {

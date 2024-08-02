@@ -5,6 +5,7 @@ import { UserPlusIcon } from "@heroicons/react/16/solid";
 import { useNavigate } from "react-router-dom";
 import { TrashIcon, PencilIcon, MagnifyingGlassIcon, ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useDebounce } from "../../ultis/deboouce";
+import { unknown } from "zod";
 
 type Props = {
   endPoint: string;
@@ -75,9 +76,9 @@ export function DefaultGrid({ endPoint, routeCreated, title, subTitle, onDelete,
   }
 
   useEffect(() => {
-    if(!search){
+    if (!search) {
       fetchData();
-    }else{
+    } else {
       debouncedFetchData();
     }
   }, [activePage, itemsPerPage, search]);
@@ -101,6 +102,7 @@ export function DefaultGrid({ endPoint, routeCreated, title, subTitle, onDelete,
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             <Input
+              crossOrigin={unknown}
               label="Procurar"
               value={search}
               onChange={(e) => {
@@ -130,32 +132,42 @@ export function DefaultGrid({ endPoint, routeCreated, title, subTitle, onDelete,
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => {
-            const isLast = index === data.length - 1;
-            const classes = isLast ? "p-2" : "p-2 border-b border-blue-gray-50";
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan={tableHead.length + 1} className="p-4 text-center">
+                <Typography variant="small" color="blue-gray" className="font-normal">
+                  Nenhum dado encontrado
+                </Typography>
+              </td>
+            </tr>
+          ) : (
+            data.map((item, index) => {
+              const isLast = index === data.length - 1;
+              const classes = isLast ? "p-2" : "p-2 border-b border-blue-gray-50";
 
-            return (
-              <tr key={item.id}>
-                {tableHead.map((head) => (
-                  <td key={head} className={classes}>
-                    <Typography variant="small" color="blue-gray" className="font-normal">
-                      {item[head]}
-                    </Typography>
+              return (
+                <tr key={item.id}>
+                  {tableHead.map((head) => (
+                    <td key={head} className={classes}>
+                      <Typography variant="small" color="blue-gray" className="font-normal">
+                        {item[head]}
+                      </Typography>
+                    </td>
+                  ))}
+                  <td className={classes}>
+                    <div className="flex flex-row">
+                      {onEdit && (
+                        <PencilIcon onClick={() => onEdit(item.id)} className="size-6 text-black hover:cursor-pointer" />
+                      )}
+                      {onDelete && (
+                        <TrashIcon onClick={() => onDelete(item.id, fetchData)} className="size-6 text-red-400 hover:cursor-pointer" />
+                      )}
+                    </div>
                   </td>
-                ))}
-                <td className={classes}>
-                  <div className="flex flex-row">
-                    {onEdit && (
-                      <PencilIcon onClick={() => onEdit(item.id)} className="size-6 text-black hover:cursor-pointer" />
-                    )}
-                    {onDelete && (
-                      <TrashIcon onClick={() => onDelete(item.id, fetchData)} className="size-6 text-red-400 hover:cursor-pointer" />
-                    )}
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
       <div className="flex justify-center my-2 items-center p-2">
@@ -180,15 +192,15 @@ export function DefaultGrid({ endPoint, routeCreated, title, subTitle, onDelete,
             size="sm"
             className="flex items-center gap-2"
             onClick={next}
-            disabled={activePage === totalPages}
+            disabled={activePage === totalPages || !data.length}
           >
             <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
           </Button>
         </div>
-        <div className="flex gap-2 border-2 border-gray-600 rounded-md p-1">
-          <Button variant={itemsPerPage === 10 ? "filled" : "text"} onClick={() => handleItemsPerPageChange(10)}>10</Button>
-          <Button variant={itemsPerPage === 25 ? "filled" : "text"} onClick={() => handleItemsPerPageChange(25)}>25</Button>
-          <Button variant={itemsPerPage === 50 ? "filled" : "text"} onClick={() => handleItemsPerPageChange(50)}>50</Button>
+        <div className="absolute right-0 mr-2 flex gap-1 items-center justify-center border-2 border-gray-600 rounded-md p-1">
+          <Button className="w-6 h-6 flex items-center justify-center" variant={itemsPerPage === 10 ? "filled" : "text"} onClick={() => handleItemsPerPageChange(10)}>10</Button>
+          <Button className="w-6 h-6 flex items-center justify-center" variant={itemsPerPage === 25 ? "filled" : "text"} onClick={() => handleItemsPerPageChange(25)}>25</Button>
+          <Button className="w-6 h-6 flex items-center justify-center" variant={itemsPerPage === 50 ? "filled" : "text"} onClick={() => handleItemsPerPageChange(50)}>50</Button>
         </div>
       </div>
     </Card>

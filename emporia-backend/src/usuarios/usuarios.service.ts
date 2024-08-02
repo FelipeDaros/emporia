@@ -10,6 +10,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { randomNumber } from 'src/helpers/utils/gerarNumeroAleatorio';
 import { ICreateCodigoRecuperarSenhaResponse } from './interfaces/ICreateCodigoRecuperarSenhaResponse';
 import { MailService } from 'src/mail/mail.service';
+import * as moment from 'moment';
 
 @Injectable()
 export class UsuariosService {
@@ -162,16 +163,17 @@ export class UsuariosService {
       if (!usuario) {
         throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
       }
-      
+
       const codigo = randomNumber();
 
       const codigosRecuperacaoSenha = await this.prismaService.codigosRecuperacaoSenha.create({
         data: {
-          codigo
+          codigo,
+          id_usuario: usuario.id
         }
       });
-      
-      await this.mailService.emailLinkRecuperacao(usuario.id);
+
+      await this.mailService.emailLinkRecuperacao(usuario.id, codigosRecuperacaoSenha.codigo);
 
       return {
         message: 'Código gerado com sucesso!',
@@ -180,6 +182,46 @@ export class UsuariosService {
       };
     } catch (error) {
       throw new BadRequestException('Erro ao tentar gerar o código para recuperar a senha do usuário', { cause: new Error(error), description: error.message })
+    }
+  }
+
+  public async verificarCodigoRecuperacaoSenha(codigo: number) {
+    try {
+      const codigoExistente = await this.prismaService.codigosRecuperacaoSenha.findFirst({
+        where: {
+          codigo
+        }
+      });
+
+      if (!codigoExistente) {
+        throw new HttpException('Código não encontrado', HttpStatus.NOT_FOUND);
+      }
+
+      const validadeCodigo = moment(codigoExistente.created_at).add(1, 'hour');
+
+      if (moment().isAfter(validadeCodigo)) {
+        throw new HttpException('O código está vencido', HttpStatus.BAD_REQUEST);
+      }
+
+
+      const usuario = await this.prismaService.usuarios.findUnique({
+        where: {
+          id: codigoExistente.id_usuario
+        }
+      })
+
+      const payload = {
+        codigoExistente,
+        usuario
+      }
+
+      return {
+        message: 'Código validado com sucesso!',
+        body: payload,
+        status: HttpStatus.FOUND
+      };
+    } catch (error) {
+      throw new BadRequestException('Erro ao tentar validar o código', { cause: new Error(error), description: error.message })
     }
   }
 }

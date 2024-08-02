@@ -8,7 +8,6 @@ export function ItemsDeServico() {
     <div className="flex justify-center">
       <DefaultGrid
         endPoint="/items"
-        searchInput=""
         onDelete={(id: number) => console.log(id)}
         onEdit={(id: number) => navigate('/items-de-servico-form', {
           state: {

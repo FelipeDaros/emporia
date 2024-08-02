@@ -18,7 +18,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
         },
       },
       defaults: {
-        from: '"No Reply" <felipe-daros@hotmail.com>',
+        from: '"No Reply" <segurancanamao@gmail.com>',
       },
       template: {
         dir: join(__dirname, 'templates'), // Diretório dos templates

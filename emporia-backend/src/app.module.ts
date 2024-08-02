@@ -12,9 +12,28 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './prisma/prisma.service';
 import { CondicaoDePagamentoModule } from './condicao-de-pagamento/condicao-de-pagamento.module';
 import { MailModule } from './mail/mail.module';
+import { SquadModule } from './squad/squad.module';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), UsuariosModule, GruposModule, ItemsModule, ClientesModule, CentroDeCustoModule, JobsModule, AuthModule, CondicaoDePagamentoModule, MailModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'), // Pasta onde os arquivos serão servidos
+      serveRoot: '/uploads', // URL base onde os arquivos serão acessíveis
+    }),
+    UsuariosModule,
+    GruposModule,
+    ItemsModule,
+    ClientesModule,
+    CentroDeCustoModule,
+    JobsModule,
+    AuthModule,
+    CondicaoDePagamentoModule,
+    MailModule,
+    SquadModule
+  ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })

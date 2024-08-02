@@ -10,6 +10,8 @@ import { FormItemsDeServico } from "../pages/ItemsDeServico/form";
 import { Jobs } from "../pages/Jobs";
 import { CondicaoDePagamento } from "../pages/CondicaoDePagamento";
 import { FormCondicaoDePagamento } from "../pages/CondicaoDePagamento/form";
+import { Squad } from "../pages/Squad";
+import { FormSquad } from "../pages/Squad/form";
 
 export function RoutesAuth() {
   return (
@@ -26,6 +28,8 @@ export function RoutesAuth() {
         <Route path="/jobs-form" element={<FormJob />}/>
         <Route path="/condicao-de-pagamento" element={<CondicaoDePagamento />}/>
         <Route path="/condicao-de-pagamento-form" element={<FormCondicaoDePagamento />}/>
+        <Route path="/squad" element={<Squad />}/>
+        <Route path="/squad-form" element={<FormSquad />}/>
       </Route>
     </Routes>
   )

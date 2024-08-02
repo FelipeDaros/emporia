@@ -38,4 +38,9 @@ export class UsuariosController {
   public async gerarCodigoRecuperacaoSenha(@Body() { email }: any) {
     return this.usuariosService.gerarCodigoRecuperacaoSenha(email);
   }
+
+  @Get('/verificar-codigo-recuperacao-senha/:codigo')
+  public async verificarCodigoRecuperacaoSenha(@Param('codigo') codigo: string) {
+    return this.usuariosService.verificarCodigoRecuperacaoSenha(+codigo);
+  }
 }

@@ -80,7 +80,7 @@ export class ClientesService {
 
   public async findAll(search: string, take: number, skip: number): Promise<IFindAllClientesResponse> {
     try {
-      const totalItems = await this.prismaService.clientes.count({
+      const count = await this.prismaService.clientes.count({
         where: search ? {
           status: 'ATIVO',
           nome: {
@@ -117,7 +117,7 @@ export class ClientesService {
       return {
         message: 'Clientes listados com sucesso!',
         body: clientes,
-        count: totalItems,
+        count,
         status: HttpStatus.OK
       };
     } catch (error) {
