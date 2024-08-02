@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports: 
+      - "3005:3005"
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    networks: 
+      - emporia-backend_nest
+    restart: always
+
+  postgres:
+    container_name: postgres
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: '@@123'
+      POSTGRES_DB: emporia
+      PGDATA: /data/postgres
+    volumes:
+      - ./data/pg:/data/postgres
+    networks:
+      - emporia-backend_nest
+
+networks:
+  emporia-backend_nest:
+    driver: bridge

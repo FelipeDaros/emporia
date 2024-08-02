@@ -1,0 +1,148 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuarios {
+  id            String    @id @default(uuid())
+  senha         String
+  nome          String
+  email         String
+  data_admissao DateTime?
+  status        String?
+  tipo_usuario  String
+  setor         String
+  funcao        String
+  horas_uteis   Int?
+  created_at    DateTime  @default(now())
+
+  @@map("usuarios")
+}
+
+model Grupos {
+  id         Int          @id @default(autoincrement())
+  nome       String
+  status     String?      @default("ATIVO")
+  created_at DateTime     @default(now())
+  items      GrupoItems[]
+
+  @@map("grupos")
+}
+
+model Items {
+  id         Int          @id @default(autoincrement())
+  descricao  String
+  valor      Decimal
+  status     String?      @default("ATIVO")
+  created_at DateTime     @default(now())
+  grupos     GrupoItems[]
+
+  @@map("items")
+}
+
+model GrupoItems {
+  id_grupo Int
+  id_item  Int
+  grupo    Grupos @relation(fields: [id_grupo], references: [id])
+  item     Items  @relation(fields: [id_item], references: [id])
+
+  created_at DateTime @default(now())
+
+  @@id([id_grupo, id_item])
+  @@map("grupo_items")
+}
+
+model Clientes {
+  id        Int        @id @default(autoincrement())
+  nome      String
+  documento String
+  contatos  Contatos[]
+
+  centro_de_custo    CentroDeCustos @relation(fields: [id_centro_de_custo], references: [id])
+  id_centro_de_custo Int
+
+  uf         String
+  cidade     String
+  rua        String
+  bairro     String
+  numero     String
+  observacao String
+
+  status String?
+
+  created_at DateTime @default(now())
+
+  @@map("clientes")
+}
+
+model Contatos {
+  id         Int      @id @default(autoincrement())
+  nome       String
+  telefone   String
+  email      String
+  id_cliente Int
+  cliente    Clientes @relation(fields: [id_cliente], references: [id])
+
+  created_at DateTime @default(now())
+
+  @@map("contatos")
+}
+
+model CentroDeCustos {
+  id        Int        @id @default(autoincrement())
+  nome      String
+  descricao String
+  clientes  Clientes[]
+
+  status     String?  @default("ATIVO")
+  created_at DateTime @default(now())
+
+  @@map("centro_de_custos")
+}
+
+model Jobs {
+  id        Int    @id @default(autoincrement())
+  nome      String
+  descricao String
+
+  created_at DateTime @default(now())
+
+  @@map("jobs")
+}
+
+model ClasseProjeto {
+  id        Int    @id @default(autoincrement())
+  descricao String
+
+  created_at DateTime @default(now())
+
+  @@map("classe_projeto")
+}
+
+model CondicaoDePagamento {
+  id              Int    @id @default(autoincrement())
+  descricao       String
+  quantidade_dias Int
+
+  status Status? @default(ATIVO)
+
+  @@map("condicao_de_pagamento")
+}
+
+model CodigosRecuperacaoSenha {
+  id         Int      @id @default(autoincrement())
+  codigo     Int
+  created_at DateTime @default(now())
+
+  @@map("codigos_recuperacao_senha")
+}
+
+enum Status {
+  ATIVO
+  DESATIVADO
+}
