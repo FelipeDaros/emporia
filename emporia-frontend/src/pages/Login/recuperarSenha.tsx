@@ -26,9 +26,9 @@ export function RecuperarSenha() {
     try {
       setLoading(true);
       api.post('/usuarios/gerar-codigo-recuperar-senha', data);
-      // setTimeout(() => {
-      //   navigate('/');
-      // }, 2000)
+      setTimeout(() => {
+        navigate('/');
+      }, 2000)
     } catch (error) {
       
     }finally{

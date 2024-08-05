@@ -6,6 +6,8 @@ import { api } from "../../config/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { ButtonDefault } from "../../components/Button";
+import { useToast } from "../../context/ToastContext";
+import axios from "axios";
 
 const schemaJobs = z.object({
   nome: z.string().nonempty('Campo obrigatório'),
@@ -15,6 +17,7 @@ const schemaJobs = z.object({
 type schema = z.infer<typeof schemaJobs>;
 
 export function FormJob() {
+  const { addToast } = useToast();
   const { state } = useLocation();
 
   const navigate = useNavigate();
@@ -29,9 +32,13 @@ export function FormJob() {
 
   const onSubmitCliente: SubmitHandler<schema> = async (data) => {
     try {
-      state?.id ? await api.put(`/jobs/${state.id}`, data) : await api.post('/jobs', data);
+      const responseData = state?.id ? await api.put(`/jobs/${state.id}`, data) : await api.post('/jobs', data);
+      addToast(responseData.data.message, 'success');
+      navigate(-1);
     } catch (error) {
-      console.log(error)
+      if (axios.isAxiosError(error)) {
+        return addToast(error.response?.data.error, 'error');
+      }
     }
   };
 

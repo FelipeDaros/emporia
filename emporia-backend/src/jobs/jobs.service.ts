@@ -4,9 +4,11 @@ import { UpdateJobDto } from './dto/update-job.dto';
 import { ICreateJobResponse } from './interfaces/ICreateJobResponse';
 import prisma from 'src/prisma.service';
 import { IFindAllJobsResponse } from './interfaces/IFindAllJobsResponse';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class JobsService {
+  constructor(private readonly prismaService: PrismaService){}
   public async create(createJobDto: CreateJobDto): Promise<ICreateJobResponse> {
     try {
       const jobExiste = await prisma.jobs.findFirst({
@@ -33,13 +35,32 @@ export class JobsService {
     }
   }
 
-  public async findAll(): Promise<IFindAllJobsResponse> {
+  public async findAll(search: string, take: number, skip: number): Promise<IFindAllJobsResponse> {
     try {
-      const jobs = await prisma.jobs.findMany();
+      const count = await this.prismaService.jobs.count({
+        where: search ? {
+          nome: {
+            contains: search,
+            mode: 'insensitive'
+          }
+        } : { }
+      });
+
+      const jobs = await prisma.jobs.findMany({
+        where: search ? {
+          nome: {
+            contains: search,
+            mode: 'insensitive'
+          }
+        } : { },
+        take,
+        skip
+      });
 
       return {
         message: 'Jobs listados com sucesso!',
         body: jobs,
+        count,
         status: HttpStatus.FOUND
       };
     } catch (error) {
@@ -89,7 +110,7 @@ export class JobsService {
       });
 
       return {
-        message: 'Usuários alterado com sucesso!',
+        message: 'Job alterado com sucesso!',
         body: jobUpdate,
         status: HttpStatus.OK
       };

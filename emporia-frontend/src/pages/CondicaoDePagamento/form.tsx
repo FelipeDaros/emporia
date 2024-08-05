@@ -5,6 +5,8 @@ import { Button } from "@material-tailwind/react";
 import { api } from "../../config/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useToast } from "../../context/ToastContext";
+import axios from "axios";
 
 const schemaItemsDeServico = z.object({
   descricao: z.string().nonempty('Campo obrigatório'),
@@ -14,6 +16,7 @@ const schemaItemsDeServico = z.object({
 type ItemsDeServicoSchema = z.infer<typeof schemaItemsDeServico>;
 
 export function FormCondicaoDePagamento() {
+  const { addToast } = useToast();
   const { state } = useLocation();
   const navigate = useNavigate();
   const {
@@ -36,9 +39,13 @@ export function FormCondicaoDePagamento() {
         ...data,
         quantidade_dias: parseFloat(data.quantidade_dias.toString()) // Ensure quantidade_dias is a number
       };
-      state?.id ? await api.put(`/condicao-de-pagamento/${state.id}`, formattedData) : await api.post('/condicao-de-pagamento', formattedData);
+      const responseData = state?.id ? await api.put(`/condicao-de-pagamento/${state.id}`, formattedData) : await api.post('/condicao-de-pagamento', formattedData);
+      addToast(responseData.data.message, 'success');
+      navigate(-1);
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        return addToast(error.response?.data.error, 'error');
+      }
     }
   };
 

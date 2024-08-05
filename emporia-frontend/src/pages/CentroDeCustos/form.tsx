@@ -5,6 +5,8 @@ import { Button } from "@material-tailwind/react";
 import { api } from "../../config/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import axios from "axios";
+import { useToast } from "../../context/ToastContext";
 
 const schemaCentroDeCustos = z.object({
   nome: z.string().nonempty('Campo obrigatório'),
@@ -14,6 +16,7 @@ const schemaCentroDeCustos = z.object({
 type CentroDeCustoSchema = z.infer<typeof schemaCentroDeCustos>;
 
 export function FormCentroDeCustos() {
+  const { addToast } = useToast();
   const { state } = useLocation();
 
   const navigate = useNavigate();
@@ -28,9 +31,13 @@ export function FormCentroDeCustos() {
 
   const onSubmitCliente: SubmitHandler<CentroDeCustoSchema> = async (data) => {
     try {
-      state?.id ? await api.put(`/centro-de-custo/${state.id}`, data) : await api.post('/centro-de-custo', data);
+      const responseData = state?.id ? await api.put(`/centro-de-custo/${state.id}`, data) : await api.post('/centro-de-custo', data);
+      addToast(responseData.data.message, 'success');
+      navigate(-1);
     } catch (error) {
-      console.log(error)
+      if (axios.isAxiosError(error)) {
+        return addToast(error.response?.data.error, 'error');
+      }
     }
   };
 

@@ -1,16 +1,22 @@
 import { useNavigate } from "react-router-dom";
 import { DefaultGrid } from "../../components/Grid";
 import { api } from "../../config/api";
+import { useToast } from "../../context/ToastContext";
+import axios from "axios";
 
 export function Clientes() {
+  const { addToast } = useToast();
   const navigate = useNavigate();
 
-  async function handleDelete(id: number, fetchData: () => void){
+  async function handleDelete(id: number, fetchData: () => void) {
     try {
-      await api.delete(`/condicao-de-pagamento/${id}`);
-      fetchData(); // Chame fetchData após deletar
+      const { data } = await api.delete(`/clientes/${id}`);
+      addToast(data.message, 'success');
+      fetchData();
     } catch (error) {
-      console.error(error);
+      if (axios.isAxiosError(error)) {
+        addToast(error?.response?.data.message, 'error');
+      }
     }
   }
 

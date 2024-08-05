@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query } from '@nestjs/common';
 import { CentroDeCustoService } from './centro-de-custo.service';
 import { CreateCentroDeCustoDto } from './dto/create-centro-de-custo.dto';
 import { UpdateCentroDeCustoDto } from './dto/update-centro-de-custo.dto';
@@ -13,8 +13,8 @@ export class CentroDeCustoController {
   }
 
   @Get()
-  findAll() {
-    return this.centroDeCustoService.findAll();
+  findAll(@Query('search') search: string, @Query('take') take: string, @Query('skip') skip: string) {
+    return this.centroDeCustoService.findAll(search, +take, +skip);
   }
 
   @Get(':id')

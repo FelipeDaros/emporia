@@ -22,6 +22,7 @@ model Usuarios {
   created_at              DateTime                  @default(now())
   CodigosRecuperacaoSenha CodigosRecuperacaoSenha[]
   SquadIntegrantes        SquadIntegrantes[]
+  Projeto                 Projeto[]
 
   @@map("usuarios")
 }
@@ -39,7 +40,7 @@ model Grupos {
 model Items {
   id         Int          @id @default(autoincrement())
   descricao  String
-  valor      Decimal
+  valor      Float        @default(0.00)
   status     String?      @default("ATIVO")
   created_at DateTime     @default(now())
   grupos     GrupoItems[]
@@ -112,7 +113,8 @@ model Jobs {
   nome      String
   descricao String
 
-  created_at DateTime @default(now())
+  created_at DateTime  @default(now())
+  Projeto    Projeto[]
 
   @@map("jobs")
 }
@@ -148,9 +150,9 @@ model CodigosRecuperacaoSenha {
 }
 
 model Squad {
-  id               Int                @id @default(autoincrement())
-  nome             String
-  logo             String
+  id     Int     @id @default(autoincrement())
+  nome   String
+  logo   String
   status Status? @default(ATIVO)
 
   squadIntegrantes SquadIntegrantes[]
@@ -168,6 +170,20 @@ model SquadIntegrantes {
 
   @@index([id_squad, id_usuario])
   @@map("squad_integrantes")
+}
+
+model Projeto {
+  id         String @id @default(uuid())
+  nome       String
+  id_job     Int
+  id_usuario String
+
+  created_at DateTime @default(now())
+
+  jobs     Jobs     @relation(fields: [id_job], references: [id])
+  usuarios Usuarios @relation(fields: [id_usuario], references: [id])
+
+  @@map("projeto")
 }
 
 enum Status {

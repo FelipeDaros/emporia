@@ -8,6 +8,8 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import { api } from "../../config/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ICentroDeCusto } from "../../interfaces/ICentroDeCusto";
+import { useToast } from "../../context/ToastContext";
+import axios from "axios";
 
 const schemaCliente = z.object({
   nome: z.string().nonempty('Campo obrigatório'),
@@ -33,6 +35,7 @@ type ContatoSchema = z.infer<typeof schemaContato>;
 const TABLE_HEAD = ["Nome", "Email", "Telefone", "Ações"];
 
 export function FormClientes() {
+  const { addToast } = useToast();
   const { state } = useLocation();
   const navigate = useNavigate();
   const {
@@ -63,9 +66,13 @@ export function FormClientes() {
         contatos
       }
 
-      state?.id ? await api.put(`/clientes/${state.id}`, payload) : await api.post('/clientes', payload);
+      const responseData = state?.id ? await api.put(`/clientes/${state.id}`, payload) : await api.post('/clientes', payload);
+      addToast(responseData.data.message, 'success');
+      navigate(-1);
     } catch (error) {
-      console.log(error)
+      if (axios.isAxiosError(error)) {
+        return addToast(error.response?.data.error, 'error');
+      }
     }
   };
 
@@ -92,7 +99,12 @@ export function FormClientes() {
 
   async function fetchCentroDeCusto() {
     try {
-      const { data } = await api.get('/centro-de-custo');
+      const { data } = await api.get('/centro-de-custo', {
+        params: {
+          take: 200,
+          skip: 0
+        }
+      });
       setCentroDeCustos(data.body);
     } catch (error) {
 

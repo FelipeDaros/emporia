@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query } from '@nestjs/common';
 import { CondicaoDePagamentoService } from './condicao-de-pagamento.service';
 import { CreateCondicaoDePagamentoDto } from './dto/create-condicao-de-pagamento.dto';
 import { UpdateCondicaoDePagamentoDto } from './dto/update-condicao-de-pagamento.dto';
@@ -13,8 +13,8 @@ export class CondicaoDePagamentoController {
   }
 
   @Get()
-  findAll() {
-    return this.condicaoDePagamentoService.findAll();
+  findAll(@Query('search') search: string, @Query('take') take: string, @Query('skip') skip: string) {
+    return this.condicaoDePagamentoService.findAll(search, +take, +skip);
   }
 
   @Get(':id')

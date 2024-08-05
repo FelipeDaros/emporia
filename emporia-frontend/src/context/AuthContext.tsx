@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { api } from "../config/api";
+import { DefaultLoading } from "../components/Loading";
 
 type AuthContextDataProps = {
   user: any;
@@ -42,7 +43,6 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
 
   async function signOut() {
     localStorage.clear()
-    await api.post('/auth/logout');
     setUser(null);
     window.location.reload();
   }
@@ -72,7 +72,7 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
     }
   }
 
-  if (loading) return <p>Loading..</p>
+  if (loading) return <DefaultLoading />
 
   return (
     <AuthContext.Provider value={{ user, signIn, signOut, loading }}>

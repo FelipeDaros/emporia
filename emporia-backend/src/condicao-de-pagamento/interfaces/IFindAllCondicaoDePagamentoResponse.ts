@@ -4,5 +4,6 @@ import { CreateCondicaoDePagamentoDto } from "../dto/create-condicao-de-pagament
 export interface IFindAllCondicaoDePagamentoResponse {
   message: string;
   body: CreateCondicaoDePagamentoDto[];
+  count: number;
   status: HttpStatus;
 }

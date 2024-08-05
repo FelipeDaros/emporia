@@ -134,6 +134,12 @@ export class UsuariosService {
         status: 'DESATIVADO'
       }
 
+      await this.prismaService.squadIntegrantes.deleteMany({
+        where: {
+          id_usuario: usuarioExcluido.id
+        }
+      });
+
       const usuarioUpdate = await prisma.usuarios.update({
         where: {
           id

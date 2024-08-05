@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { GruposService } from './grupos.service';
 import { CreateGrupoDto } from './dto/create-grupo.dto';
 import { UpdateGrupoDto } from './dto/update-grupo.dto';
@@ -13,8 +13,8 @@ export class GruposController {
   }
 
   @Get()
-  findAll() {
-    return this.gruposService.findAll();
+  findAll(@Query('search') search: string, @Query('take') take: string, @Query('skip') skip: string) {
+    return this.gruposService.findAll(search, +take, +skip);
   }
 
   @Get(':id')

@@ -1,7 +1,6 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
-import prisma from 'src/prisma.service';
 import { IListItemsResponse } from './interfaces/IListItemsResponse';
 import { STATUS } from 'src/helpers/enums/status';
 import { ICreateItemResponse } from './interfaces/ICreateItemResponse';
@@ -11,20 +10,26 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ItemsService {
-  constructor(private readonly prismaService: PrismaService){}
-  public async create(createItemDtos: CreateItemDto[]): Promise<IListItemsResponse> {
+  constructor(private readonly prismaService: PrismaService) { }
+  public async create(createItemDto: CreateItemDto): Promise<ICreateItemResponse> {
     try {
-      const createPromises = createItemDtos.map(dto =>
-        this.prismaService.items.create({
-          data: dto
-        })
-      );
+      const itemExistente = await this.prismaService.items.findFirst({
+        where: {
+          descricao: createItemDto.descricao
+        }
+      });
 
-      const createdItems = await Promise.all(createPromises);
-  
+      if (itemExistente) {
+        throw new HttpException('Item cadastrado com essa descrição', HttpStatus.AMBIGUOUS);
+      }
+
+      const item = await this.prismaService.items.create({
+        data: createItemDto
+      });
+
       return {
-        message: 'items cadastrados com sucesso!',
-        body: createdItems,
+        message: 'item cadastrado com sucesso!',
+        body: item,
         status: HttpStatus.CREATED
       };
     } catch (error) {
@@ -32,17 +37,34 @@ export class ItemsService {
     }
   }
 
-  public async findAll(): Promise<IListItemsResponse> {
+  public async findAll(search: string, take: number, skip: number): Promise<IListItemsResponse> {
     try {
+      const count = await this.prismaService.items.count({
+        where: search ? {
+          status: 'ATIVO',
+          descricao: {
+            contains: search,
+            mode: 'insensitive'
+          }
+        } : { status: 'ATIVO' }
+      });
+
       const items = await this.prismaService.items.findMany({
-        where: {
-          status: STATUS.ATIVO
-        }
+        where: search ? {
+          status: 'ATIVO',
+          descricao: {
+            contains: search,
+            mode: 'insensitive'
+          }
+        } : { status: 'ATIVO' },
+        take,
+        skip
       })
-  
+
       return {
         message: 'item listados com sucesso!',
         body: items,
+        count,
         status: HttpStatus.FOUND
       };
     } catch (error) {
@@ -62,7 +84,7 @@ export class ItemsService {
       if (!item) {
         throw new HttpException('Item não encontrado', HttpStatus.NOT_FOUND);
       }
-  
+
       return {
         message: 'Item listado com sucesso!',
         body: item,
@@ -92,7 +114,7 @@ export class ItemsService {
         },
         data: updateItenDto
       })
-  
+
       return {
         message: 'Item alterado com sucesso!',
         body: updateItem,
@@ -125,9 +147,9 @@ export class ItemsService {
         where: {
           id
         },
-        data:itemUpdate
+        data: itemUpdate
       })
-  
+
       return {
         message: 'Item excluído com sucesso!',
         body: itemUpdate,
@@ -143,7 +165,7 @@ export class ItemsService {
       const grupo = await this.prismaService.grupos.findFirst({
         where: {
           id: id_grupo,
-           status: STATUS.ATIVO
+          status: STATUS.ATIVO
         }
       });
 
@@ -162,7 +184,7 @@ export class ItemsService {
       );
 
       await Promise.all(createPromises);
-  
+
       return {
         message: 'Items adicionado com sucesso ao grupo!',
         body: 'none',

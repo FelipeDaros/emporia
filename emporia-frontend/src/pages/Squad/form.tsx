@@ -7,6 +7,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { ISquadIntegrantes } from "../../interfaces/ISquadIntegrantes";
+import axios from "axios";
+import { useToast } from "../../context/ToastContext";
 
 const schemaSquad = z.object({
   nome: z.string().nonempty('Campo obrigatório'),
@@ -17,6 +19,7 @@ type SquadSchema = z.infer<typeof schemaSquad>;
 const TABLE_HEAD = ["", "Nome", "Email", "Ações"];
 
 export function FormSquad() {
+  const { addToast } = useToast();
   const { state } = useLocation();
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [usuariosSelecionados, setUsuariosSelecionados] = useState<string[]>([]);
@@ -44,21 +47,21 @@ export function FormSquad() {
     formData.append("ids_usuarios", JSON.stringify(usuariosSelecionados));
 
     try {
-      if (state?.id) {
-        await api.put(`/squad/${state.id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-      } else {
-        await api.post('/squad', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-      }
+      const responseData = state?.id ? await api.put(`/squad/${state.id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }) : await api.post('/squad', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      addToast(responseData.data.message, 'success');
+      navigate(-1);
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        return addToast(error.response?.data.error, 'error');
+      }
     }
   };
 
@@ -90,7 +93,7 @@ export function FormSquad() {
       }
     });
   }
-  
+
   async function fetchUsuarios() {
     try {
       const { data } = await api.get('/usuarios');

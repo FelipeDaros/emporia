@@ -36,17 +36,34 @@ export class CentroDeCustoService {
     }
   }
 
-  public async findAll(): Promise<IFindAllCentroDeCustosResponse> {
+  public async findAll(search: string, take: number, skip: number): Promise<IFindAllCentroDeCustosResponse> {
     try {
+      const count = await this.prismaService.centroDeCustos.count({
+        where: search ? {
+          status: 'ATIVO',
+          nome: {
+            contains: search,
+            mode: 'insensitive'
+          }
+        } : { status: 'ATIVO' }
+      });
+
       const centroDeCustos = await prisma.centroDeCustos.findMany({
-        where: {
-          status: 'ATIVO'
-        }
+        where: search ? {
+          status: 'ATIVO',
+          nome: {
+            contains: search,
+            mode: 'insensitive'
+          }
+        } : { status: 'ATIVO' },
+        skip,
+        take
       });
 
       return {
         message: 'Centro de custos listados com sucesso!',
         body: centroDeCustos,
+        count,
         status: HttpStatus.OK
       };
     } catch (error) {

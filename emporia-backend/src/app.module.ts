@@ -15,6 +15,7 @@ import { MailModule } from './mail/mail.module';
 import { SquadModule } from './squad/squad.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ProjetoModule } from './projeto/projeto.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     AuthModule,
     CondicaoDePagamentoModule,
     MailModule,
-    SquadModule
+    SquadModule,
+    ProjetoModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

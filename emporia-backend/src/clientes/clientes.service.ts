@@ -177,7 +177,7 @@ export class ClientesService {
         status: HttpStatus.OK
       };
     } catch (error) {
-      throw new BadRequestException('Ocorreu um erro ao listar o cliente', { cause: new Error(error), description: error.message })
+      throw new BadRequestException('Ocorreu um erro ao altear', { cause: new Error(error), description: error.message })
     }
   }
 

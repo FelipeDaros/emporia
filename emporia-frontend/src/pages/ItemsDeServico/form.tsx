@@ -5,6 +5,8 @@ import { Button } from "@material-tailwind/react";
 import { api } from "../../config/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useToast } from "../../context/ToastContext";
+import axios from "axios";
 
 const schemaItemsDeServico = z.object({
   descricao: z.string().nonempty('Campo obrigatório'),
@@ -14,6 +16,7 @@ const schemaItemsDeServico = z.object({
 type ItemsDeServicoSchema = z.infer<typeof schemaItemsDeServico>;
 
 export function FormItemsDeServico() {
+  const { addToast } = useToast();
   const { state } = useLocation();
   const navigate = useNavigate();
   const {
@@ -36,9 +39,13 @@ export function FormItemsDeServico() {
         ...data,
         valor: parseFloat(data.valor.toString()) // Ensure valor is a number
       };
-      state?.id ? await api.put(`/items/${state.id}`, formattedData) : await api.post('/items', formattedData);
+      const responseData =  state?.id ?  await api.put(`/items/${state.id}`, formattedData) : await api.post('/items', formattedData);
+      addToast(responseData.data.message, 'success');
+      navigate(-1);
     } catch (error) {
-      console.log(error);
+      if(axios.isAxiosError(error)){
+        return addToast(error.response?.data.error, 'error');
+      }
     }
   };
 

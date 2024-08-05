@@ -36,17 +36,34 @@ export class CondicaoDePagamentoService {
     }
   }
 
-  public async findAll(): Promise<IFindAllCondicaoDePagamentoResponse> {
+  public async findAll(search: string, take: number, skip: number): Promise<IFindAllCondicaoDePagamentoResponse> {
     try {
+      const count = await this.prismaService.condicaoDePagamento.count({
+        where: search ? {
+          status: 'ATIVO',
+          descricao: {
+            contains: search,
+            mode: 'insensitive'
+          }
+        } : { status: 'ATIVO' }
+      });
+
       const condicoesDePagamento = await this.prismaService.condicaoDePagamento.findMany({
-        where: {
-          status: 'ATIVO'
-        }
+        where: search ? {
+          status: 'ATIVO',
+          descricao: {
+            contains: search,
+            mode: 'insensitive'
+          }
+        } : { status: 'ATIVO' },
+        take,
+        skip
       });
 
       return {
         message: 'Codições de pgamento listadas com sucesso!',
         body: condicoesDePagamento,
+        count,
         status: HttpStatus.OK
       };
     } catch (error) {

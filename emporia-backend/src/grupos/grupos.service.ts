@@ -4,9 +4,11 @@ import { UpdateGrupoDto } from './dto/update-grupo.dto';
 import { IGrupoResponse } from './interfaces/ICreateResponse';
 import prisma from 'src/prisma.service';
 import { IFindAllGrupoResponse } from './interfaces/IFindAllResponse';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class GruposService {
+  constructor(private readonly prismaService: PrismaService){}
   public async create(createGrupoDto: CreateGrupoDto): Promise<IGrupoResponse> {
     try {
       const grupoExiste = await prisma.grupos.findFirst({
@@ -33,17 +35,34 @@ export class GruposService {
     }
   }
 
-  public async findAll(): Promise<IFindAllGrupoResponse> {
+  public async findAll(search: string, take: number, skip: number): Promise<IFindAllGrupoResponse> {
     try {
+      const count = await this.prismaService.grupos.count({
+        where: search ? {
+          status: 'ATIVO',
+          nome: {
+            contains: search,
+            mode: 'insensitive'
+          }
+        } : { status: 'ATIVO' }
+      });
+
       const grupos = await prisma.grupos.findMany({
-        where: {
-          status: 'ATIVO'
-        }
+        where: search ? {
+          status: 'ATIVO',
+          nome: {
+            contains: search,
+            mode: 'insensitive'
+          }
+        } : { status: 'ATIVO' },
+        take,
+        skip
       });
 
       return {
         message: 'Grupos listado com sucesso!',
         body: grupos,
+        count,
         status: HttpStatus.FOUND
       };
     } catch (error) {

@@ -43,13 +43,12 @@ export const DefaultMenu: React.FC = ({ children }) => {
               <Link to="/clientes" className="hover:bg-gray-700 p-2 block">Clientes</Link>
             </li>
             <li
-              className="mt-2 hover:bg-gray-700 relative"
+              className="mt-2 hover:bg-gray-700"
               onClick={() => setIsSettingsSubMenuOpen(prev => !prev)}
-              onMouseLeave={() => setIsSettingsSubMenuOpen(false)}
             >
               <a className="p-2 block hover:cursor-pointer">Configurações</a>
               {isSettingsSubMenuOpen && (
-                <ul className="absolute z-50 w-4/5 left-full top-0 bg-gray-700 text-white mt-2">
+                <ul className="bg-gray-700 text-white mt-2">
                   <li>
                     <Link className="p-2 block hover:bg-gray-600 hover:cursor-pointer" to="/items-de-servico">Items de serviço</Link>
                   </li>
@@ -66,13 +65,12 @@ export const DefaultMenu: React.FC = ({ children }) => {
               )}
             </li>
             <li
-              className="mt-2 hover:bg-gray-700 relative"
+              className="mt-2 hover:bg-gray-700"
               onClick={() => setIsProjectsSubMenuOpen(prev => !prev)}
-              onMouseLeave={() => setIsProjectsSubMenuOpen(false)}
             >
               <a className="p-2 block hover:cursor-pointer">Gestão de Projetos</a>
               {isProjectsSubMenuOpen && (
-                <ul className="absolute z-50 w-4/5 left-full top-0 bg-gray-700 text-white mt-2">
+                <ul className="bg-gray-700 text-white mt-2">
                   <li>
                     <Link className="p-2 block hover:bg-gray-600 hover:cursor-pointer" to="/squad">Squad</Link>
                   </li>
