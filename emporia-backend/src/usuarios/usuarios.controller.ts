@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
@@ -15,8 +15,8 @@ export class UsuariosController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.usuariosService.findAll();
+  findAll(@Query('search') search: string, @Query('take') take: string, @Query('skip') skip: string) {
+    return this.usuariosService.findAll(search, +take, +skip);
   }
 
   @Get(':id')

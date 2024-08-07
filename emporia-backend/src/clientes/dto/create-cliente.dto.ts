@@ -4,7 +4,7 @@ import { IsArray, IsInt, IsString, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 import { CreateContatoDto } from "./create-contato-dto";
 
-export class CreateClienteDto implements Omit<Clientes, 'created_at' | 'id' | 'status'> {
+export class CreateClienteDto implements Omit<Clientes, 'created_at' | 'id' | 'status' | 'updated_at'> {
   @ApiProperty()
   @IsString()
   nome: string;

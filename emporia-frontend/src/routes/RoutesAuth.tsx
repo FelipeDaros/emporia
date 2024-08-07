@@ -12,12 +12,20 @@ import { CondicaoDePagamento } from "../pages/CondicaoDePagamento";
 import { FormCondicaoDePagamento } from "../pages/CondicaoDePagamento/form";
 import { Squad } from "../pages/Squad";
 import { FormSquad } from "../pages/Squad/form";
+import { Projetos } from "../pages/Projetos";
+import { FormProjeto } from "../pages/Projetos/form";
+import { Usuarios } from "../pages/Usuarios";
+import { FormUsuarios } from "../pages/Usuarios/form.";
+import { Setores } from "../pages/Setor";
+import { FormSetores } from "../pages/Setor/form";
 
 export function RoutesAuth() {
   return (
     <Routes>
       <Route path="/" element={<DefaultLayout />}>
         <Route path="/" element={<FormJob />} />
+        <Route path="/usuarios" element={<Usuarios />}/>
+        <Route path="/usuarios-form" element={<FormUsuarios />}/>
         <Route path="/clientes" element={<Clientes />}/>
         <Route path="/clientes-form" element={<FormClientes />}/>
         <Route path="/centro-de-custos" element={<CentroDeCustos />}/>
@@ -30,6 +38,10 @@ export function RoutesAuth() {
         <Route path="/condicao-de-pagamento-form" element={<FormCondicaoDePagamento />}/>
         <Route path="/squad" element={<Squad />}/>
         <Route path="/squad-form" element={<FormSquad />}/>
+        <Route path="/projetos" element={<Projetos />}/>
+        <Route path="/projetos-form" element={<FormProjeto />}/>
+        <Route path="/setores" element={<Setores />}/>
+        <Route path="/setores-form" element={<FormSetores />}/>
       </Route>
     </Routes>
   )

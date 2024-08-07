@@ -4,6 +4,9 @@ import { UpdateProjetoDto } from './dto/update-projeto.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ICreateProjetoResponse } from './interfaces/ICreateProjetoResponse';
 import { IFindAllProjetoResponse } from './interfaces/IFindAllProjetoResponse';
+import { BuscarProjetoAoUsuarioDto } from './dto/buscar-projeto-ao-usuario.dto';
+import { $Enums } from '@prisma/client';
+import { EnviarTempoDto } from './dto/enviar-tempo.dto';
 
 @Injectable()
 export class ProjetoService {
@@ -145,5 +148,47 @@ export class ProjetoService {
     } catch (error) {
       throw new BadRequestException('Ocorreu um erro ao excluir', { cause: new Error(error), description: error.message })
     }
+  }
+
+
+  public async buscarProjetoAoUsuario({ codigo, email }: BuscarProjetoAoUsuarioDto): Promise<any> {
+    try {
+      const usuario = await this.prismaService.usuarios.findFirst({
+        where: {
+          email,
+          status: $Enums.Status.ATIVO
+        }
+      });
+
+      if (!usuario) {
+        throw new HttpException('Usuário não encontrado!', HttpStatus.NOT_FOUND);
+      }
+
+      const projeto = await this.prismaService.projeto.findUnique({
+        where: {
+          id: codigo
+        },
+      });
+
+      if (!projeto) {
+        throw new HttpException('Projeto não encontrado!', HttpStatus.NOT_FOUND);
+      }
+
+      return {
+        message: 'Projeto encontrado com sucesso!',
+        body: {
+          projeto,
+          usuario
+        },
+        status: HttpStatus.OK
+      };
+
+    } catch (error) {
+      throw new BadRequestException('Ocorreu um erro ao buscar o projeto', { cause: new Error(error), description: error.message })
+    }
+  }
+
+  public async enviarTempo(enviarTempoDto: EnviarTempoDto): Promise<any>{
+    console.log(enviarTempoDto)
   }
 }

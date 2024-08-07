@@ -44,11 +44,38 @@ export const DefaultMenu: React.FC = ({ children }) => {
             </li>
             <li
               className="mt-2 hover:bg-gray-700"
+              onClick={() => setIsProjectsSubMenuOpen(prev => !prev)}
+            >
+              <a className="p-2 block hover:cursor-pointer">Gestão de Projetos</a>
+              {isProjectsSubMenuOpen && (
+                <ul className="bg-gray-700 text-white mt-2">
+                  <li>
+                    <Link className="p-2 block hover:bg-gray-600 hover:cursor-pointer" to="/squad">Squad</Link>
+                  </li>
+                  <li>
+                    <Link className="p-2 block hover:bg-gray-600 hover:cursor-pointer" to="/projetos">Projetos</Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+            <li className="mt-2">
+              <Link to="/usuarios" className="hover:bg-gray-700 p-2 block">Usuários</Link>
+            </li>
+            <li
+              className="mt-2 hover:bg-gray-700"
               onClick={() => setIsSettingsSubMenuOpen(prev => !prev)}
             >
               <a className="p-2 block hover:cursor-pointer">Configurações</a>
               {isSettingsSubMenuOpen && (
                 <ul className="bg-gray-700 text-white mt-2">
+
+                  <li>
+                    <Link className="p-2 block hover:bg-gray-600 hover:cursor-pointer" to="/setores">Setores</Link>
+                  </li>
+
+                  <li>
+                    <Link className="p-2 block hover:bg-gray-600 hover:cursor-pointer" to="/funcoes">Funções</Link>
+                  </li>
                   <li>
                     <Link className="p-2 block hover:bg-gray-600 hover:cursor-pointer" to="/items-de-servico">Items de serviço</Link>
                   </li>
@@ -60,19 +87,6 @@ export const DefaultMenu: React.FC = ({ children }) => {
                   </li>
                   <li>
                     <Link className="p-2 block hover:bg-gray-600 hover:cursor-pointer" to="/condicao-de-pagamento">Condição de pagamento</Link>
-                  </li>
-                </ul>
-              )}
-            </li>
-            <li
-              className="mt-2 hover:bg-gray-700"
-              onClick={() => setIsProjectsSubMenuOpen(prev => !prev)}
-            >
-              <a className="p-2 block hover:cursor-pointer">Gestão de Projetos</a>
-              {isProjectsSubMenuOpen && (
-                <ul className="bg-gray-700 text-white mt-2">
-                  <li>
-                    <Link className="p-2 block hover:bg-gray-600 hover:cursor-pointer" to="/squad">Squad</Link>
                   </li>
                 </ul>
               )}
@@ -95,7 +109,7 @@ export const DefaultMenu: React.FC = ({ children }) => {
         <div className="bg-gray-900 text-white p-4 flex items-center justify-between hidden md:flex">
           <h1 className="text-xl font-bold">Menu Superior</h1>
           <IconButton color="white" onClick={signOut}>
-            <ArrowLeftEndOnRectangleIcon className="text-black size-8"/>
+            <ArrowLeftEndOnRectangleIcon className="text-black size-8" />
           </IconButton>
         </div>
 

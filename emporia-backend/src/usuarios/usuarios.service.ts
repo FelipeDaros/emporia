@@ -5,7 +5,7 @@ import prisma from 'src/prisma.service';
 import { FindAllResponse } from './interfaces/IFindAllResponse';
 import * as bcrypt from 'bcryptjs';
 import { IUsuarioResponse } from './interfaces/ICreateResponse';
-import { Usuarios } from '@prisma/client';
+import { $Enums, Usuarios } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { randomNumber } from 'src/helpers/utils/gerarNumeroAleatorio';
 import { ICreateCodigoRecuperarSenhaResponse } from './interfaces/ICreateCodigoRecuperarSenhaResponse';
@@ -48,17 +48,37 @@ export class UsuariosService {
     }
   }
 
-  public async findAll(): Promise<FindAllResponse> {
+  public async findAll(search: string, take: number, skip: number): Promise<FindAllResponse> {
     try {
+      const count = await this.prismaService.usuarios.count({
+        where: search ? {
+          status: $Enums.Status.ATIVO,
+          nome: {
+            contains: search,
+            mode: 'insensitive'
+          }
+        } : { status: $Enums.Status.ATIVO, },
+        take,
+        skip
+
+      });
+
       const usuarios = await prisma.usuarios.findMany({
-        where: {
-          status: 'ATIVO'
-        }
+        where: search ? {
+          status: $Enums.Status.ATIVO,
+          nome: {
+            contains: search,
+            mode: 'insensitive'
+          }
+        } : { status: $Enums.Status.ATIVO, },
+        take,
+        skip
       });
 
       return {
         message: 'Usuários listados com sucesso!',
         body: usuarios,
+        count,
         status: HttpStatus.FOUND
       };
     } catch (error) {

@@ -3,7 +3,7 @@ import { Items } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { IsDecimal, IsNumber, IsString, Min } from "class-validator";
 
-export class CreateItemDto implements Omit<Items, 'created_at' | 'id' | 'status'> {
+export class CreateItemDto implements Omit<Items, 'created_at' | 'id' | 'status' | 'updated_at'> {
   @ApiProperty()
   @IsString()
   descricao: string;

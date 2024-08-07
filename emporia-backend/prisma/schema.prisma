@@ -9,22 +9,52 @@ datasource db {
 }
 
 model Usuarios {
-  id                      String                    @id @default(uuid())
-  senha                   String
-  nome                    String
-  email                   String
-  data_admissao           DateTime?
-  status                  String?
-  tipo_usuario            String
-  setor                   String
-  funcao                  String
-  horas_uteis             Int?
-  created_at              DateTime                  @default(now())
+  id            String      @id @default(uuid())
+  senha         String
+  nome          String
+  email         String
+  data_admissao DateTime?
+  status        Status
+  tipo_usuario  TipoUsuario
+  horas_uteis   Int?
+
+  created_at DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  id_setor  Int
+  id_funcao Int
+
   CodigosRecuperacaoSenha CodigosRecuperacaoSenha[]
   SquadIntegrantes        SquadIntegrantes[]
   Projeto                 Projeto[]
+  funcao                  Funcao                    @relation(fields: [id_funcao], references: [id])
+  setor                   Setor                     @relation(fields: [id_setor], references: [id])
 
   @@map("usuarios")
+}
+
+model Setor {
+  id       Int        @id @default(autoincrement())
+  nome     String
+  status   Status
+  Usuarios Usuarios[]
+
+  created_at DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("setor")
+}
+
+model Funcao {
+  id       Int        @id @default(autoincrement())
+  nome     String
+  status   Status
+  Usuarios Usuarios[]
+
+  created_at DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("funcao")
 }
 
 model Grupos {
@@ -32,6 +62,7 @@ model Grupos {
   nome       String
   status     String?      @default("ATIVO")
   created_at DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
   items      GrupoItems[]
 
   @@map("grupos")
@@ -43,6 +74,7 @@ model Items {
   valor      Float        @default(0.00)
   status     String?      @default("ATIVO")
   created_at DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
   grupos     GrupoItems[]
 
   @@map("items")
@@ -55,6 +87,7 @@ model GrupoItems {
   item     Items  @relation(fields: [id_item], references: [id])
 
   created_at DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   @@id([id_grupo, id_item])
   @@map("grupo_items")
@@ -79,6 +112,7 @@ model Clientes {
   status String?
 
   created_at DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   @@map("clientes")
 }
@@ -92,6 +126,7 @@ model Contatos {
   cliente    Clientes @relation(fields: [id_cliente], references: [id])
 
   created_at DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   @@map("contatos")
 }
@@ -104,6 +139,7 @@ model CentroDeCustos {
 
   status     String?  @default("ATIVO")
   created_at DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   @@map("centro_de_custos")
 }
@@ -114,6 +150,7 @@ model Jobs {
   descricao String
 
   created_at DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
   Projeto    Projeto[]
 
   @@map("jobs")
@@ -124,6 +161,7 @@ model ClasseProjeto {
   descricao String
 
   created_at DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   @@map("classe_projeto")
 }
@@ -135,6 +173,9 @@ model CondicaoDePagamento {
 
   status Status? @default(ATIVO)
 
+  created_at DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
   @@map("condicao_de_pagamento")
 }
 
@@ -145,6 +186,7 @@ model CodigosRecuperacaoSenha {
   usuario    Usuarios @relation(fields: [id_usuario], references: [id])
 
   created_at DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   @@map("codigos_recuperacao_senha")
 }
@@ -179,6 +221,7 @@ model Projeto {
   id_usuario String
 
   created_at DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   jobs     Jobs     @relation(fields: [id_job], references: [id])
   usuarios Usuarios @relation(fields: [id_usuario], references: [id])
@@ -189,4 +232,9 @@ model Projeto {
 enum Status {
   ATIVO
   DESATIVADO
+}
+
+enum TipoUsuario {
+  EMPORIA
+  CLIENTE
 }

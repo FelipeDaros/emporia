@@ -1,8 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Usuarios } from "@prisma/client";
-import { IsEmail, IsNumber, IsString } from "class-validator";
+import { $Enums, Usuarios } from "@prisma/client";
+import { IsEmail, IsInt, IsNumber, IsString } from "class-validator";
 
-export class CreateUsuarioDto implements Omit<Usuarios, 'created_at' | 'id'> {
+export class CreateUsuarioDto implements Omit<Usuarios, 'created_at' | 'id' | 'updated_at'> {
   @ApiProperty()
   @IsString()
   data_admissao: Date;
@@ -10,10 +10,6 @@ export class CreateUsuarioDto implements Omit<Usuarios, 'created_at' | 'id'> {
   @ApiProperty()
   @IsEmail()
   email: string;
-
-  @ApiProperty()
-  @IsString()
-  funcao: string;
 
   @ApiProperty()
   @IsNumber()
@@ -26,16 +22,18 @@ export class CreateUsuarioDto implements Omit<Usuarios, 'created_at' | 'id'> {
   @ApiProperty()
   @IsString()
   senha: string;
-
-  @ApiProperty()
-  @IsString()
-  setor: string;
   
   @ApiProperty({ enum: ['ATIVO', 'DESATIVADO']})
   @IsString()
-  status: 'ATIVO' | 'DESATIVADO';
+  status: $Enums.Status
 
   @ApiProperty({ enum: ['CLIENTE', 'EMPRESA']})
   @IsString()
-  tipo_usuario: 'CLIENTE' | 'EMPRESA'
+  tipo_usuario: $Enums.TipoUsuario;
+
+  @IsInt()
+  id_funcao: number;
+
+  @IsInt()
+  id_setor: number;
 }
